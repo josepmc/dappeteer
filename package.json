@@ -1,6 +1,6 @@
 {
   "name": "dappeteer",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "E2E testing for dApps using Puppeteer + MetaMask",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/decentraland/dappeteer.git"
+    "url": "https://github.com/josepmc/dappeteer.git"
   },
   "keywords": [
     "e2e",
@@ -18,7 +18,8 @@
     "dapp",
     "ethereum"
   ],
-  "author": "Juan Cazala <juan@decentraland.org>",
+  "author":  "Josep Mateu Clemente <jmateu.clemente@gmail.com>",
+  "contributor": "Juan Cazala <juan@decentraland.org>",
   "license": "MIT",
   "devDependencies": {
     "puppeteer": "^1.5.0"

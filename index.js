@@ -142,6 +142,8 @@ module.exports = {
         await waitForEthereum(metamaskPage)
       },
 
+      // TODO: Add changing an account
+      // TODO: Make sure to switch to the original page after interacting with metamask
       confirmTransaction: async (options = {}) => {
         await metamaskPage.bringToFront()
         if (!signedIn) {
@@ -152,34 +154,46 @@ module.exports = {
         await waitForGasEstimation(metamaskPage)
 
         const inputs = await metamaskPage.$$('input[type="number"].hex-input')
+        let confirmButton
+        if (!inputs.length) {
+          // This is a 'verify' transaction
+          confirmButton = await metamaskPage.$x(
+            './/button[text()="Sign"]'
+          )
+          if (confirmButton.length > 0) {
+            confirmButton = confirmButton[0];
+          } else {
+            throw new Error("Page not recognized");
+          }
+        } else {
+          const gasLimit = options.gasLimit || 100000
+          const gas = options.gas || 20
 
-        const gasLimit = options.gasLimit || 100000
-        const gas = options.gas || 20
+          await metamaskPage.evaluate(
+            () =>
+              (document.querySelectorAll(
+                'input[type="number"].hex-input'
+              )[0].value =
+                '')
+          )
+          await inputs[0].type(gasLimit.toString())
 
-        await metamaskPage.evaluate(
-          () =>
-            (document.querySelectorAll(
-              'input[type="number"].hex-input'
-            )[0].value =
-              '')
-        )
-        await inputs[0].type(gasLimit.toString())
+          await metamaskPage.evaluate(
+            () =>
+              (document.querySelectorAll(
+                'input[type="number"].hex-input'
+              )[1].value =
+                '')
+          )
+          await inputs[1].type(gas.toString())
 
-        await metamaskPage.evaluate(
-          () =>
-            (document.querySelectorAll(
-              'input[type="number"].hex-input'
-            )[1].value =
-              '')
-        )
-        await inputs[1].type(gas.toString())
-
-        await metamaskPage.waitFor(
-          () => !document.querySelector('input[type="submit"].confirm').disabled
-        )
-        const confirmButton = await metamaskPage.$(
-          'input[type="submit"].confirm'
-        )
+          await metamaskPage.waitFor(
+            () => !document.querySelector('input[type="submit"].confirm').disabled
+          )
+          confirmButton = await metamaskPage.$(
+            'input[type="submit"].confirm'
+          );
+        }
         await confirmButton.click()
         await waitForUnlockedScreen(metamaskPage)
       }
